@@ -5,7 +5,7 @@ from datetime import datetime
 from .forms import NameForm
 from .. import db
 from ..models import User
-
+from ..email import send_email
 
 @main.route('/',methods=['GET','POST'])
 def index():

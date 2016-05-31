@@ -1,0 +1,3 @@
+<p>亲爱的 {{ user.username }},</p>
+	<p><a href="{{ url_for('auth.change_email', token=token, _external=True)}}">请点我确认您的新邮箱地址.</a></p><p>天马博客团队</p>
+<p><small>注意:如果不是您发送的请求,请忽略此邮件.请不要回复此邮件,谢谢.</small></p>

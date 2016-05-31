@@ -11,7 +11,7 @@ class Config(object):
 	MAIL_USE_TLS = True
 	MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
 	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-	FLASK_MAIL_SUBJECT_PREFIX = '[tianmaflaskblog]'
+	FLASK_MAIL_SUBJECT_PREFIX = '[天马博客]'
 	FLASK_MAIL_SENDER = os.environ.get('FLASK_ADMIN')
 	FLASK_ADMIN = os.environ.get('FLASK_ADMIN')
 	SQLALCHEMY_TRACK_MODIFICATIONS = True

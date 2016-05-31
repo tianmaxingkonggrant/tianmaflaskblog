@@ -27,13 +27,13 @@ def upgrade():
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=True),
-    sa.Column('email', sa.String(length=64), nullable=True),
+    sa.Column('mail', sa.String(length=64), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')
     )
-    op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    op.create_index(op.f('ix_users_email'), 'users', ['mail'], unique=True)
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
     ### end Alembic commands ###
 

@@ -1,0 +1,4 @@
+<p>亲爱的{{user.username}}:</p>
+    <p>欢迎来到天马博客!</p>
+    <p><a href="{{url_for('auth.confirm',token=token,_external=True)}}">请点我确认您的账号</a>感谢您注册天马博客,祝愿您的天马之旅高兴愉快.</p><pre>天马博客团队</pre>
+    <p><small>注意:如果不是您发送的请求,请忽略此邮件.请不要回复此邮件,谢谢.</small></p>

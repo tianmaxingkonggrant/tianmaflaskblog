@@ -1,0 +1,5 @@
+亲爱的 {{ user.username }},
+请点击下面的链接以确认您的账号:
+{{ url_for('auth.confirm', token=token, _external=True) }}
+天马博客团队
+注意:如果不是您发送的请求,请忽略此邮件.请不要回复此邮件,谢谢.
