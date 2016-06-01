@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block page_content %}
+<div class="page-header">
+    <h1>{{user.username}}</h1>
+    <p>{% if user.name %}姓名:{{user.name}}{% endif %}</p>
+    <p>{% if user.location %} 地址：<a href="http://api.map.baidu.com/geocoder?
+                address={{ user.location }}&output=html">
+                    {{ user.location }}</a><br>{% endif %}</p>
+    {% if current_user.is_administrator() %}
+    <p><a href="mailto:{{user.email}}">{{user.email}}</a></p>{% endif %}
+    {% if current_user.about_me %}
+    <P>关于我:{{user.about_me}}</P>{% endif %}
+    <p>注册日期:{{moment(user.member_since).format('L')}}</p>
+    <p>最近访问:{{moment(user.last_seen).fromNow()}}</p>
+</div>
+
+{% endblock %}

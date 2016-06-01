@@ -62,6 +62,11 @@ class User(UserMixin, db.Model):
 	password_hash = db.Column(db.String(128))
 	role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
 	confirmed = db.Column(db.Boolean,default=False)
+	name = db.Column(db.String(64))
+	location = db.Column(db.String(64))
+	about_me = db.Column(db.Text())
+	member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
 
 
 	def __init__(self,**kwargs):
@@ -144,6 +149,9 @@ class User(UserMixin, db.Model):
 		db.session.add(self)
 		return True
 
+	def ping(self):
+		self.last_seen = datetime.utcnow()
+		db.session.add(self)
 
 	def __repr__(self):
 		return '<User %r>' % self.username
