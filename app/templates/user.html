@@ -12,6 +12,12 @@
     <P>关于我:{{user.about_me}}</P>{% endif %}
     <p>注册日期:{{moment(user.member_since).format('L')}}</p>
     <p>最近访问:{{moment(user.last_seen).fromNow()}}</p>
+    {% if user == current_user %}
+    <a class="btn btn-success" href="{{url_for('main.edit_profile')}}">编辑资料</a>
+    {% endif %}
+    {% if current_user.is_administrator() %}
+    <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">编辑资料[管理员]</a>
+    {% endif %}
 </div>
 
 {% endblock %}

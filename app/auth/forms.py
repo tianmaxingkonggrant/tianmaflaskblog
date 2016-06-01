@@ -2,8 +2,9 @@
 from flask.ext.wtf import Form
 from wtforms import StringField,SubmitField,PasswordField,BooleanField
 from wtforms.validators import  DataRequired,EqualTo,Email,Length,Regexp
+from wtforms import ValidationError
 from ..models import User
-from ..exceptions import ValidationError
+
 
 class LoginForm(Form):
 	email = StringField('邮箱',validators=[Email(message='邮箱格式不正确'),DataRequired(message='请填写登陆邮箱'),Length(1,64)])

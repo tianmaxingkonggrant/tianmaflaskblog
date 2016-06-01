@@ -69,6 +69,7 @@ class User(UserMixin, db.Model):
 	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
 
 
+
 	def __init__(self,**kwargs):
 		super(User, self).__init__(**kwargs)
 		if self.role is None:
