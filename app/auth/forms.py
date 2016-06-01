@@ -1,5 +1,4 @@
 # coding=utf-8
-
 from flask.ext.wtf import Form
 from wtforms import StringField,SubmitField,PasswordField,BooleanField
 from wtforms.validators import  DataRequired,EqualTo,Email,Length,Regexp
@@ -53,7 +52,6 @@ class PasswordResetForm(Form):
 	password2 = PasswordField('确认密码', validators=[DataRequired(message='请填写密码')])
 	submit = SubmitField('保存')
 
-	@staticmethod
 	def validate_email(self, field):
 		if User.query.filter_by(email=field.data).first() is None:
 			return ValidationError('该邮箱不存在.')
@@ -64,7 +62,6 @@ class ChangeEmailForm(Form):
 	password = PasswordField('密码', validators=[DataRequired(message='请填写密码')])
 	submit = SubmitField('保存')
 
-	@staticmethod
 	def validate_email(self, field):
 		if User.query.filter_by(email=field.data).first():
 			raise ValidationError('该邮箱已注册,请更换邮箱')
