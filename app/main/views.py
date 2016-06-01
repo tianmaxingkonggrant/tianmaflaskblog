@@ -1,43 +1,40 @@
 # coding=utf-8
 from flask import (render_template, session, redirect,url_for,
-				   current_app, flash)
+				   current_app, flash, request)
 from . import main
 from datetime import datetime
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm
+from .forms import PostForm, EditProfileForm, EditProfileAdminForm
 from .. import db
-from ..models import User, Role
+from ..models import User, Role, Permission, Post
 from ..email import send_email
 from flask.ext.login import login_required, current_user
 from ..decorator import admin_required
 
 @main.route('/',methods=['GET','POST'])
 def index():
-	form = NameForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(username=form.name.data).first()
-		if user is None:
-			user = User(username=form.name.data)
-			db.session.add(user)
-			session['known'] = False
-			if current_app.config['FLASK_ADMIN']:
-				send_email(current_app.config['FLASK_ADMIN'],'新用户','mail/new_user',
-						   user=user)
-		else:
-			session['known'] = True
-			session['name'] = form.name.data
-			form.name.data = ''
+	form = PostForm()
+	if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+		post = Post(title=form.title.data, body=form.body.data, author=current_user._get_current_object())
+		db.session.add(post)
 		return redirect(url_for('main.index'))
-	return render_template('index.html',form=form,name=session.get('name'),
-						   known=session.get('known',False),
-						   current_time=datetime.utcnow())
+	page = request.args.get('page', 1, type=int)
+	pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+		page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'], error_out=False
+	)
+	posts = pagination.items
+	return render_template('index.html', form=form, posts=posts, pagination=pagination)
+
 
 
 @main.route('/user/<username>')
 def user(username):
-	user = User.query.filter_by(username=username).first()
-	if user is None:
-		return False
-	return render_template('user.html', user=user)
+	user = User.query.filter_by(username=username).first_or_404()
+	page = request.args.get('page', 1, type=int)
+	pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'],
+        error_out=False)
+	posts = pagination.items
+	return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -82,3 +79,4 @@ def edit_profile_admin(id):
 	form.name.data = user.name
 	form.about_me.data = user.about_me
 	return render_template('edit_profile.html', form=form, user=user)
+

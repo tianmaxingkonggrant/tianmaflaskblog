@@ -1,5 +1,5 @@
 # coding=utf-8
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request,abort
 from . import auth
 from flask.ext.login import login_user, login_required, logout_user, current_user
 from ..models import User
@@ -63,21 +63,24 @@ def register():
 		db.session.commit()
 		token = user.generate_confirmation_token()
 		send_email(user.email, '确认您的账号', 'auth/email/confirm', user=user, token=token)
-		flash('确认邮件已经发送到您的邮箱,请确认.')
-		return redirect(url_for('main.index'))
+		flash('邮件已经发送到您的邮箱.')
+		return redirect(url_for('auth.login'))
 	return render_template('auth/register.html', form=form)
 
 
 @auth.route('/confirm/<token>')
 def confirm(token):
-	if current_user.confirmed:
+	if current_user.is_authenticated:
+		if current_user.confirmed:
+			return redirect(url_for('main.index'))
+		if current_user.confirm(token):
+			flash('您已完成账号确认,马上开始您的天马之旅吧!')
+		else:
+			flash('您的确认链接无效或已过期,请尝试重新获取确认链接.')
+			return redirect(url_for('auth.unconfirmed'))
 		return redirect(url_for('main.index'))
-	if current_user.confirm(token):
-		flash('您已完成账号确认,马上开始您的天马之旅吧!')
 	else:
-		flash('您的确认链接无效或已过期,请尝试重新获取确认链接.')
-		return redirect(url_for('auth.unconfirmed'))
-	return redirect(url_for('main.index'))
+		abort(401)
 
 
 @auth.route('/change-password', methods=['GET', 'POST'])

@@ -1,0 +1,11 @@
+<ul class="posts">
+    {% for post in posts %}
+    <li>
+        <div class="post-author"><a href="{{url_for('main.user',username=
+        post.author.username)}}">{{post.author.username}}</a>
+        <div class="post-date">{{moment(post.timestamp).fromNow()}}</div></div>
+        <div>{{post.title}}</div>
+        <div class="post-body">{{post.body}}</div>
+    </li>
+    {% endfor %}
+</ul>

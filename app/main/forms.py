@@ -44,3 +44,9 @@ class EditProfileAdminForm(Form):
 		if field.data != self.user.username and User.query.filter_by(username=field.\
 																  data).first():
 			raise ValidationError('该用户名已注册.')
+
+
+class PostForm(Form):
+	title = StringField('标题', validators=[Length(0, 128)])
+	body = TextAreaField('内容', validators=[DataRequired(message='填写内容')])
+	submit = SubmitField('发表')

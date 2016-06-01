@@ -59,7 +59,7 @@ class User(UserMixin, db.Model):
 	id = db.Column(db.Integer,primary_key=True,unique=True)
 	username = db.Column(db.String(64),unique=True,index=True)
 	email = db.Column(db.String(64),unique=True,index=True)
-	password_hash = db.Column(db.String(128))
+	password_hash = db.Column(db.String(64))
 	role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
 	confirmed = db.Column(db.Boolean,default=False)
 	name = db.Column(db.String(64))
@@ -67,7 +67,7 @@ class User(UserMixin, db.Model):
 	about_me = db.Column(db.Text())
 	member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-
+	posts = db.relationship('Post', backref='author', lazy='dynamic')
 
 
 	def __init__(self,**kwargs):
@@ -159,28 +159,26 @@ class User(UserMixin, db.Model):
 
 
 class AnonymousUser(AnonymousUserMixin):
-
-	@staticmethod
-	def can():
+	def can(self,permissions):
 		return False
 
 	@staticmethod
-	def is_administrator():
+	def is_administrator(self):
 		return False
 
-login_manager.anonymous_user = AnonymousUser
 
+class Post(db.Model):
+	__tablename__ ='posts'
+	id = db.Column(db.Integer, primary_key=True, unique=True)
+	title = db.Column(db.String(128))
+	body = db.Column(db.Text())
+	timestamp = db.Column(db.DateTime(), index=True, default=datetime.utcnow())
+	author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
 
-
-
-
-
-
-
-
+login_manager.anonymous_user = AnonymousUser
 

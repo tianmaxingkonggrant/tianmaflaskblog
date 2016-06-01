@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block page_content %}
+{% import '_macros.html' as macros %}
+
 <div class="page-header">
     <h1>{{user.username}}</h1>
     <p>{% if user.name %}姓名:{{user.name}}{% endif %}</p>
@@ -19,5 +21,13 @@
     <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">编辑资料[管理员]</a>
     {% endif %}
 </div>
-
+<div>
+    <h3>{{user.username}}发表的博文</h3>
+    {% include '_posts.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{macros.pagination_widget(pagination, 'main.user',username=username)}}
+</div>
+{% endif %}
+</div>
 {% endblock %}
