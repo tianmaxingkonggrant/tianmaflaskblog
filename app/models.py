@@ -165,7 +165,7 @@ class AnonymousUser(AnonymousUserMixin):
 		return False
 
 	@staticmethod
-	def is_administrator(self):
+	def is_administrator():
 		return False
 
 

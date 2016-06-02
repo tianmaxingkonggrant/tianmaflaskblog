@@ -15,3 +15,7 @@ def interval_server_error(e):
 @main.app_errorhandler(401)
 def authentication_required(e):
 	return render_template('401.html'), 401
+
+@main.app_errorhandler(403)
+def authentication_required(e):
+	return render_template('401.html'), 403

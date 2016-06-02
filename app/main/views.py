@@ -1,5 +1,5 @@
 # coding=utf-8
-from flask import (render_template, session, redirect,url_for,
+from flask import (render_template, abort, redirect,url_for,
 				   current_app, flash, request)
 from . import main
 from datetime import datetime
@@ -86,3 +86,18 @@ def post(id):
 	post = Post.query.get_or_404(id)
 	return render_template('post.html', posts=[post])
 
+@main.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+	post = Post.query.get_or_404(id)
+	if current_user != post.author and not current_user.can(Permission.ADMINISTER):
+		abort(403)
+	form = PostForm()
+	if form.validate_on_submit():
+		post.title = form.title.data
+		post.body = form.body.data
+		db.session.add(post)
+		flash('您的博文已更新.')
+		return redirect(url_for('main.post', id=post.id))
+	form.title.data = post.title
+	form.body.data = post.body
+	return render_template('edit_post.html', form=form)
