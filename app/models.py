@@ -91,7 +91,7 @@ class User(UserMixin, db.Model):
 				self.role = Role.query.filter_by(permissions=0xff).first()
 			if self.role is None:
 				self.role = Role.query.filter_by(default=True).first()
-
+		self.follow(self)
 
 	def can(self,permissions):
 		return self.role is not None and \
@@ -107,6 +107,19 @@ class User(UserMixin, db.Model):
 	@password.setter
 	def password(self, password):
 		self.password_hash = generate_password_hash(password)
+
+	@property
+	def followed_posts(self):
+		return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+			.filter(Follow.follower_id == self.id)
+
+	@staticmethod
+	def add_self_follows():
+		for user in User.query.all():
+			if not user.is_following(user):
+				user.follow(user)
+				db.session.add(user)
+				db.session.commit()
 
 	def verify_password(self, password):
 		return check_password_hash(self.password_hash, password)
@@ -203,7 +216,7 @@ class Post(db.Model):
 	title = db.Column(db.String(128))
 	body = db.Column(db.Text)
 	body_html = db.Column(db.Text)
-	timestamp = db.Column(db.DateTime(), index=True, default=datetime.utcnow())
+	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 

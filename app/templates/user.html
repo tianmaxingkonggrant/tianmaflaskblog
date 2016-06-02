@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% block page_content %}
 {% import '_macros.html' as macros %}
 
+{% block page_content %}
 <div class="page-header">
     <h1>{{user.username}}</h1>
     <p>{% if user.name %}姓名:{{user.name}}{% endif %}</p>
@@ -22,10 +22,10 @@
         <a href="{{url_for('main.unfollow',username=user.username)}}" class="btn btn-success">取消关注</a>{% endif %}
     {% endif %}
     <a href="{{url_for('main.followers',username=user.username)}}">
-        关注我: <span class="badge">{{user.followers.count()}}</span>
+        关注我: <span class="badge">{{user.followers.count() - 1}}</span>
     </a>
     <a href="{{url_for('main.followed',username=user.username)}}">
-        我在关注: <span class="badge">{{user.followed.count()}}</span>
+        我在关注: <span class="badge">{{user.followed.count() - 1}}</span>
     </a>
     {% if current_user.is_authenticated and user != current_user and user.
     is_following(current_user)%}
@@ -43,7 +43,7 @@
     {% include '_posts.html' %}
 {% if pagination %}
 <div class="pagination">
-    {{macros.pagination_widget(pagination, 'main.user',username=username)}}
+    {{macros.pagination_widget(pagination, 'main.user', username=user.username)}}
 </div>
 {% endif %}
 </div>
