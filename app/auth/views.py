@@ -63,7 +63,7 @@ def register():
 		db.session.commit()
 		token = user.generate_confirmation_token()
 		send_email(user.email, '确认您的账号', 'auth/email/confirm', user=user, token=token)
-		flash('邮件已经发送到您的邮箱.')
+		flash('确认邮件已经发送到您的邮箱,马上登陆吧!')
 		return redirect(url_for('auth.login'))
 	return render_template('auth/register.html', form=form)
 
@@ -75,13 +75,13 @@ def confirm(token):
 			return redirect(url_for('main.index'))
 		if current_user.confirm(token):
 			flash('您已完成账号确认,马上开始您的天马之旅吧!')
+			from manage import app
+			send_email(app.config['FLASK_MAIL_SENDER'], '新用户', 'mail/new_user',user=current_user)
 		else:
 			flash('您的确认链接无效或已过期,请尝试重新获取确认链接.')
-			return redirect(url_for('auth.unconfirmed'))
 		return redirect(url_for('main.index'))
 	else:
 		abort(401)
-
 
 @auth.route('/change-password', methods=['GET', 'POST'])
 @login_required
