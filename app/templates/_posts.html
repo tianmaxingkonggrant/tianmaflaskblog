@@ -28,6 +28,9 @@
                 <sapn class="label label-danger">编辑博文[管理员]</sapn>
             </a>
             {% endif %}
+            <a href="{{url_for('main.post',id=post.id)}}#comments">
+                {{post.comments.count()}}条评论
+            </a>
         </div>
     </li>
     {% endfor %}
