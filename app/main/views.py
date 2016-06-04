@@ -2,6 +2,7 @@
 from flask import (render_template, abort, redirect,url_for,
 				   current_app, flash, request, make_response)
 from . import main
+from flask.views import View
 from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm, ImgForm, SearchForm
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
@@ -32,7 +33,7 @@ def index():
 	searchform = SearchForm()
 	query = searchform.search.data
 	if searchform.validate_on_submit():
-		return redirect(url_for('main.search_results', query=query))
+		return redirect(url_for('main.search_results', query=unicode(query)))
 	return render_template('index.html', form=form,
 			posts=posts, pagination=pagination,
 			show_followed=show_followed, searchform=searchform)
@@ -134,6 +135,25 @@ def edit(id):
 	return render_template('edit_post.html', form=form)
 
 
+@main.route('/delete/<int:id>')
+@login_required
+def delete(id):
+	post = Post.query.get_or_404(id)
+	if post.author == current_user:
+		db.session.delete(post)
+		return redirect(url_for('main.user', username=current_user.usernmae))
+
+
+@main.route('/deletes/<int:id>')
+@login_required
+@admin_required
+def deletes(id):
+	post = Post.query.get_or_404(id)
+	db.session.delete(post)
+	return redirect(url_for('main.index')or request.args.get('next'))
+
+
+
 @main.route('/follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -174,7 +194,7 @@ def followers(username):
 	pagination = user.followers.paginate(
 		page, per_page=current_app.config['FLASK_FOLLOWERS_PER_PAGE'], error_out=False
 	)
-	follows = [{'user': item.follower, 'timestamp':item.timestamp} for item\
+	follows = [{'user': item.follower, 'timestamp': item.timestamp} for item\
 			   in pagination.items]
 	return render_template('followers.html', user=user, pagination=pagination,
 						   follows=follows, title="Followers of",
@@ -216,8 +236,8 @@ def show_followed():
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate():
 	page = request.args.get('page', 1, type=int)
-	pagination =  Comment.query.order_by(Comment.timestamp.desc()).paginate(
-		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENT'], error_out=\
+	pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENTS'], error_out=\
 		False
 	)
 	comments = pagination.items

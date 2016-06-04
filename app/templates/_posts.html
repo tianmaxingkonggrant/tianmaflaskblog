@@ -25,7 +25,17 @@
             {% endif %}
             {% if current_user.is_administrator() %}
             <a href="{{url_for('main.edit',id=post.id)}}">
-                <sapn class="label label-danger">编辑博文[管理员]</sapn>
+                <sapn class="label label-warning">编辑博文[管理员]</sapn>
+            </a>
+            {% endif %}
+            {% if user == current_user %}
+            <a href="{{url_for('main.delete',id=post.id)}}">
+                <sapn class="label label-danger">删除博文</sapn>
+            </a>
+            {% endif %}
+            {% if current_user.is_administrator() %}
+            <a href="{{url_for('main.deletes',id=post.id)}}">
+                <sapn class="label label-danger">删除博文[管理员]</sapn>
             </a>
             {% endif %}
             <a href="{{url_for('main.post',id=post.id)}}#comments">
