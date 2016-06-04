@@ -16,11 +16,14 @@ class Config(object):
 	FLASK_ADMIN = os.environ.get('FLASK_ADMIN')
 	SQLALCHEMY_TRACK_MODIFICATIONS = True
 	FLASK_POSTS_PER_PAGE = 10
-	FLASK_POSTS_PER_PAGE = 10
 	FLASK_FOLLOWERS_PER_PAGE = 10
 	FLASK_PER_PAGE_COMMENTS = 10
 	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 	UPLOAD_FOLDER = os.path.join(basedir, 'app/static/uploadimages')
+	MAX_SEARCH_RESULTS = 10
+	WHOOSH_BASE = os.path.join(basedir, 'searchindexdir')
+	WHOSHEE_MIN_STRING_LEN = 1
+	PACKAGE_DIR = '/tmp/'
 	@staticmethod
 	def init_app(app):
 		pass

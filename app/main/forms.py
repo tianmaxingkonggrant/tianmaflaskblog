@@ -61,3 +61,8 @@ class CommentForm(Form):
 class ImgForm(Form):
 	picture = FileField('上传照片')
 	submit = SubmitField('保存')
+
+
+class SearchForm(Form):
+	search = StringField('', validators=[DataRequired()])
+	submit=SubmitField('搜索')

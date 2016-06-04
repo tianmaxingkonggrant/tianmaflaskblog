@@ -10,7 +10,8 @@ from datetime import datetime
 from markdown import markdown
 import bleach
 from .exceptions import ValidationError
-
+import flask_whooshalchemy  as whooshalchemy
+from .ChineseAnalyzer import ChineseAnalyzer
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -233,6 +234,9 @@ class User(UserMixin, db.Model):
 	def __repr__(self):
 		return '<User %r>' % self.username
 
+	def __str__(self):
+		return '<User %r>' % self.name
+
 
 class AnonymousUser(AnonymousUserMixin):
 	def can(self,permissions):
@@ -245,6 +249,8 @@ class AnonymousUser(AnonymousUserMixin):
 
 class Post(db.Model):
 	__tablename__ ='posts'
+	__searchable__ = ['title', 'body']
+	__analyzer__ = ChineseAnalyzer()
 	id = db.Column(db.Integer, primary_key=True, unique=True)
 	title = db.Column(db.String(128))
 	body = db.Column(db.Text)
@@ -283,6 +289,15 @@ class Post(db.Model):
 			raise ValidationError('博文没有内容.') # 这里的ValidationError不是来自wtforms
 		return Post(title=title, body=body)
 
+	def __repr__(self):
+		return '<%r>' % (self.body)
+
+	def __str__(self):
+		return '<%s>' % (self.body)
+
+def a():
+	from manage import app
+	whooshalchemy.whoosh_index(app, Post)
 
 class Comment(db.Model):
 	__tablename__ = 'comments'
@@ -318,7 +333,11 @@ class Comment(db.Model):
 			raise ValidationError('评论不能为空.')
 		return Comment(body=body)
 
+	def __repr__(self):
+		return '<%r>' % (self.body)
 
+	def __str__(self):
+		return '<%s>' % (self.body)
 
 @login_manager.user_loader
 def load_user(user_id):

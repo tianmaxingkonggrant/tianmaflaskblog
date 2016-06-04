@@ -2,14 +2,13 @@
 from flask import (render_template, abort, redirect,url_for,
 				   current_app, flash, request, make_response)
 from . import main
-from datetime import datetime
-from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm, ImgForm
+from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm, ImgForm, SearchForm
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
-from ..email import send_email
 from flask.ext.login import login_required, current_user
 from ..decorator import admin_required,permission_required
 from werkzeug.security import safe_join
+
 
 @main.route('/',methods=['GET','POST'])
 def index():
@@ -30,7 +29,13 @@ def index():
 		page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'], error_out=False
 	)
 	posts = pagination.items
-	return render_template('index.html', form=form, posts=posts, pagination=pagination, show_followed=show_followed)
+	searchform = SearchForm()
+	query = searchform.search.data
+	if searchform.validate_on_submit():
+		return redirect(url_for('main.search_results', query=query))
+	return render_template('index.html', form=form,
+			posts=posts, pagination=pagination,
+			show_followed=show_followed, searchform=searchform)
 
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
@@ -240,7 +245,15 @@ def moderate_disabled(id):
 	return redirect(url_for('main.moderate',page=request.args.get('page', 1, type=int)))
 
 
-
+@main.route('/search_results/<query>')
+def search_results(query):
+	# searcher = ix.searcher()
+	# results = searcher.find('content',querystring=query)
+	from manage import app
+	results = Post.query.whoosh_search(query, limit=app.config['MAX_SEARCH_RESULTS'],\
+		fields=['title', 'body'], ).all()
+	flash('搜索出来了！')
+	return render_template('search_results.html', query=query, posts=results)
 
 
 
