@@ -3,12 +3,13 @@ from flask import (render_template, abort, redirect,url_for,
 				   current_app, flash, request, make_response)
 from . import main
 from datetime import datetime
-from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm
+from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm, ImgForm
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
 from ..email import send_email
 from flask.ext.login import login_required, current_user
 from ..decorator import admin_required,permission_required
+from werkzeug.security import safe_join
 
 @main.route('/',methods=['GET','POST'])
 def index():
@@ -32,8 +33,7 @@ def index():
 	return render_template('index.html', form=form, posts=posts, pagination=pagination, show_followed=show_followed)
 
 
-
-@main.route('/user/<username>')
+@main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	page = request.args.get('page', 1, type=int)
@@ -41,7 +41,16 @@ def user(username):
         page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'],
         error_out=False)
 	posts = pagination.items
-	return render_template('user.html', user=user, posts=posts, pagination=pagination)
+	form = ImgForm()
+	from manage import app
+	if form.validate_on_submit():
+		current_user.img = form.picture.data.filename
+		if current_user.img and user.allowed_img(current_user.img):
+			imgdest = safe_join(app.config['UPLOAD_FOLDER'], current_user.img)
+			form.picture.data.save(imgdest)
+			db.session.add(current_user)
+			return redirect(url_for('main.user', username=username))
+	return render_template('user.html', form=form, user=user, posts=posts, pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

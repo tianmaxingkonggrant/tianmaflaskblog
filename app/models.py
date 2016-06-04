@@ -77,6 +77,7 @@ class User(UserMixin, db.Model):
 	about_me = db.Column(db.Text())
 	member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+	img=db.Column(db.Unicode(64))
 	posts = db.relationship('Post', backref='author', lazy='dynamic')
 	followed = db.relationship('Follow', foreign_keys=[Follow.follower_id],
 					backref=db.backref('follower', lazy='joined'),
@@ -211,6 +212,10 @@ class User(UserMixin, db.Model):
 		except:
 			return None
 		return User.query.get(data['id'])
+
+	def allowed_img(self, img):
+		from manage import app
+		return '.' in img and img.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 	def to_json(self):
 		json_user = {

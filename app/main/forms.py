@@ -1,7 +1,7 @@
 # coding=utf-8
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, TextAreaField, \
-	BooleanField, SelectField
+	BooleanField, SelectField, FileField
 from wtforms.validators import DataRequired, Length, Email, Regexp
 from ..models import Role, User
 from wtforms import ValidationError
@@ -52,6 +52,12 @@ class PostForm(Form):
 	body = PageDownField('内容', validators=[DataRequired(message='填写内容')])
 	submit = SubmitField('发表')
 
+
 class CommentForm(Form):
 	body = StringField('评论君', validators=[DataRequired(message='请填写评论内容')])
 	submit = SubmitField('评论')
+
+
+class ImgForm(Form):
+	picture = FileField('上传照片')
+	submit = SubmitField('保存')

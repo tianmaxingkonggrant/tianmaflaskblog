@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% import '_macros.html' as macros %}
-
+{% import 'bootstrap/wtf.html' as wtf %}
 {% block page_content %}
 <div class="page-header">
     <h1>{{user.username}}</h1>
@@ -37,6 +37,8 @@
     {% if current_user.is_administrator() %}
     <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">编辑资料[管理员]</a>
     {% endif %}
+    {{wtf.quick_form(form)}}
+    <img src="../static/uploadimages/{{current_user.img}}">
 </div>
 <div>
     <h3>{{user.username}}发表的博文</h3>

@@ -19,6 +19,8 @@ class Config(object):
 	FLASK_POSTS_PER_PAGE = 10
 	FLASK_FOLLOWERS_PER_PAGE = 10
 	FLASK_PER_PAGE_COMMENTS = 10
+	ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+	UPLOAD_FOLDER = os.path.join(basedir, 'app/static/uploadimages')
 	@staticmethod
 	def init_app(app):
 		pass
