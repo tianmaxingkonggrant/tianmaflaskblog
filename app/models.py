@@ -5,10 +5,11 @@ from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import login_manager
 import sys
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app, url_for
 from datetime import datetime
 from markdown import markdown
 import bleach
+from .exceptions import ValidationError
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -198,6 +199,32 @@ class User(UserMixin, db.Model):
 	def is_followed_by(self, user):
 		return self.follower.filter_by(follower_id=user.id).first() is not None
 
+	def generate_auth_token(self,expiration=3600):
+		s =Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+		return s.dumps({'id': self.id})
+
+	@staticmethod
+	def verify_auth_token(token):
+		s = Serializer(current_app.config['SECRET_KEY'])
+		try:
+			data = s.loads(token)
+		except:
+			return None
+		return User.query.get(data['id'])
+
+	def to_json(self):
+		json_user = {
+			'url': url_for('api.get_user', id=self.id, _external=True),
+			'username': self.username,
+			'member_since': self.member_since,
+			'last_seen': self.last_seen,
+			'posts': url_for('api.get_posts',id=self.id, _external=True),
+			'followed_posts': url_for('api.get_user_followed_posts', id=self.id,_external=True),
+			'post.count':self.posts.count()
+		} # 提供给客户端的资源<没必要>和数据库模型的内部表示完全一致，以实现隐私保护.
+		return json_user
+
+
 	def __repr__(self):
 		return '<User %r>' % self.username
 
@@ -229,6 +256,28 @@ class Post(db.Model):
 		target.body_html = bleach.linkify(bleach.clean(markdown(value,\
 				output_format='html'), tags=allowed_tags, strip=True))
 
+	def to_json(self):
+		json_post = {
+			'url': url_for('api.get_post', id=self.id, _external=True),
+			'title': self.title,
+			'body': self.body,
+			'body_html': self.body_html,
+			'timestamp': self.timestamp,
+			'author': url_for('api.get_user', id=self.author_id, _external=True),
+			'comments': url_for('api.get_comments', id=self.id, _external=True),
+			'comment_count': self.comments.count()
+		}
+		return json_post
+
+	# json_post 是从客户端提供的
+	@staticmethod
+	def from_json(json_post):
+		title = json_post.get('title')
+		body = json_post.get('body')
+		if body is None or body == '':
+			raise ValidationError('博文没有内容.') # 这里的ValidationError不是来自wtforms
+		return Post(title=title, body=body)
+
 
 class Comment(db.Model):
 	__tablename__ = 'comments'
@@ -246,6 +295,24 @@ class Comment(db.Model):
 					   'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3',
 					   'p', 'br', 'u', 'time', 'article', 'h4']
 		target.body_html = bleach.linkify(bleach.clean(markdown(value,output_format='html'), tags=allowed_tag, strip=True))
+
+	def to_json(self):
+		json_comment = {
+			'url': url_for('api.get_comment', id=self.id, _external=True),
+			'post': url_for('api.get_post', id=self.post_id, _external=True),
+			'body': self.body,
+			'body_html': self.body_html,
+			'author': url_for('api.get_user', id=self.author_id, _external=True)
+		}
+		return json_comment
+
+	@staticmethod
+	def from_json(json_comment):
+		body = json_comment.get('body')
+		if body is None or body == '':
+			raise ValidationError('评论不能为空.')
+		return Comment(body=body)
+
 
 
 @login_manager.user_loader

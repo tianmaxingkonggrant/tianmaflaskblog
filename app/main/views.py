@@ -212,7 +212,7 @@ def moderate():
 
 
 
-@main.route('/moderate/enable/<int:id>')
+@main.route('/moderate/enable/<int:id>')#这里的路由相当于通道,并不停留在这个页面,这是一种需要
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate_enable(id):
@@ -221,7 +221,7 @@ def moderate_enable(id):
 	db.session.add(comment)
 	return redirect(url_for('main.moderate', page=request.args.get('page', 1, type=int)))
 
-@main.route('/moderate/disable/<int:id>')
+@main.route('/moderate/disable/<int:id>')#这里的路由相当于通道,并不停留在这里.
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)
 def moderate_disabled(id):
