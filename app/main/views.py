@@ -13,11 +13,6 @@ from werkzeug.security import safe_join
 
 @main.route('/',methods=['GET','POST'])
 def index():
-	form = PostForm()
-	if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-		post = Post(title=form.title.data, body=form.body.data, author=current_user._get_current_object())
-		db.session.add(post)
-		return redirect(url_for('main.index'))
 	show_followed = False
 	if current_user.is_authenticated:
 		show_followed = bool(request.cookies.get('show_followed', ''))
@@ -27,19 +22,32 @@ def index():
 		query = Post.query
 	page = request.args.get('page', 1, type=int)
 	pagination = query.order_by(Post.timestamp.desc()).paginate(
-		page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'], error_out=False
-	)
+		page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'], error_out=False)
 	posts = pagination.items
+	postsart = Post.query.order_by(Post.timestamp.desc()).all()
+	def ax(post):
+		return post.comments.count()
+	p = sorted(postsart, key=ax, reverse=True)
 	searchform = SearchForm()
 	query = searchform.search.data
 	if searchform.validate_on_submit():
 		return redirect(url_for('main.search_results', query=unicode(query)))
-	return render_template('index.html', form=form,
-			posts=posts, pagination=pagination,
-			show_followed=show_followed, searchform=searchform)
+	return render_template('index.html', postsart=postsart, p=p,
+						   posts=posts, pagination=pagination, show_followed=show_followed, searchform=searchform)
 
+
+@main.route('/write-post', methods=['GET', 'POST'])
+@login_required
+def write_post():
+	form = PostForm()
+	if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+		post = Post(title=form.title.data, body=form.body.data, 			author=current_user._get_current_object())
+		db.session.add(post)
+		return redirect(url_for('main.index', posts=[post]))
+	return render_template('write_post.html', form=form)
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
+@login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	page = request.args.get('page', 1, type=int)
@@ -114,7 +122,7 @@ def post(id):
 		return redirect(url_for('main.post', id=post.id))
 	page = request.args.get('page', 1, type=int)
 	pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENT'])
+		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENTS'])
 	comments = pagination.items
 	return render_template('post.html', posts=[post], form=form, comments=comments, pagination=pagination)
 
@@ -151,7 +159,6 @@ def deletes(id):
 	post = Post.query.get_or_404(id)
 	db.session.delete(post)
 	return redirect(url_for('main.index')or request.args.get('next'))
-
 
 
 @main.route('/follow/<username>')

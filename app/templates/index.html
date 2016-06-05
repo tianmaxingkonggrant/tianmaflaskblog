@@ -1,33 +1,294 @@
-{% extends "base.html" %}
+{% extends 'bootstrap/base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
 {% import '_macros.html' as macros %}
-{% block page_content %}
-<div class="page-header">
-    {{wtf.quick_form(searchform)}}
-    <h1>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}天马博客的访客{% endif %}!</h1>
-</div>
-<div>
-    {% if current_user.can(Permission.WRITE_ARTICLES) %}
-    {{wtf.quick_form(form)}}
-    {% endif %}
-</div>
-<div class="post-tabs">
-    <ul class="nav nav-tabs">
-        <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all') }}">所有博文</a></li>
-        {% if current_user.is_authenticated %}
-        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">被关注用户博文</a></li>
-        {% endif %}
-    </ul>
-    {% include '_posts.html' %}
-</div>
-{% if pagination %}
-<div class="pagination">
-    {{macros.pagination_widget(pagination, 'main.index')}}
-</div>
-{% endif %}
+{% block head %}
+{{ super() }}
+    <link rel="shortcut icon"  href="../static/project_images/favicon.ico" type='image/x-icon'>
+    <link rel="icon"  href="../static/project_images/favicon.ico" type='image/x-icon'>
+    <link rel="stylesheet" href="../static/css/screen.css">
+
 {% endblock %}
 
+{% block title %}
+天马博客
+{% endblock %}
+
+{% block body %}
+<body  class="home-template">
+ <!-- start header -->
+    <header class="main-header">
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+   <!-- 轮播（Carousel）项目 -->
+   <div class="carousel-inner">
+      <div class="item active">
+         <img src="../static/project_images/slide1.jpg" alt="First slide">
+      </div>
+      <div class="item">
+         <img src="../static/project_images/slide2.jpg" alt="Second slide">
+      </div>
+      <div class="item">
+         <img src="../static/project_images/slide3.jpg" alt="Third slide">
+      </div>
+   </div>
+   <!-- 轮播（Carousel）导航 -->
+   <a class="carousel-control left" href="#myCarousel"
+      data-slide="prev" ></a>
+   <a class="carousel-control right" href="#myCarousel"
+      data-slide="next" ></a>
+
+</div>
+
+    </header>
+    <!-- end header -->
+
+{% block navbar %}
+      <!-- start navigation -->
+    <nav class="main-navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="navbar-header">
+                        <span class="nav-toggle-button collapsed"
+                              data-toggle="collapse" data-target="#main-menu">
+                        <span class="sr-only">Toggle navigation</span>
+                        </span>
+                    </div>
+                    <div class="collapse navbar-collapse" >
+                        <ul class="menu">
+                            <li class="nav-current" role="presentation">
+                                <a href="{{ url_for('main.index') }}">首页</a></li>
+                            <li role="presentation"><a href="{{ url_for('main.index')}}">博客文章</a></li>
+                            <li role="presentation">
+                                {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('main.write_post')}}">记录生活</a>{% else %}<a href="
+                                {{ url_for('auth.login') }}">记录生活</a>{% endif %}</li>
+
+                            <li  role="presentation">
+                                {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('main.user',username=current_user.username)}}">我的世界
+                                </a>{% else %}<a href="{{ url_for('auth.login') }}">我的世界</a>{% endif %}
+                            </li>
+                            {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                                <li><a href="{{url_for('main.moderate')}}">管理评论</a></li>
+                            {% endif %}
+                            <li class="navbar-form navbar-right">
+                                {{ wtf.quick_form(searchform) }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- end navigation -->
+{% endblock %}
+
+{% block content %}
+<div class="container">
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+{% endfor %}</div>
+
+{% block page_content %}
+     <section class="content-wrap">
+        <div class="container">
+            {% if current_user.is_authenticated %}
+                <div class="page-header">
+                    <h1>hello,{{ current_user.username }}!</h1>
+                    <ul class="nav nav-tabs">
+                        <li {% if not show_followed %} class="active"{% endif %}>
+                                <a href="{{ url_for('.show_all') }}">所有博客</a>
+                            </li>
+                        <li {% if show_followed %} class="active"
+                            {% endif %}>
+                            <a href="{{ url_for('.show_followed')}}">关注的博客</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="row">
+                <main class="col-md-8 main-content" >
+                        <div>
+                        {% for post in posts %}
+                            <li class="post">
+                                <div class="post-head">
+                                    <h1 class="post-title" id="mainposts"><a id="postsli" href=
+                                            "{{ url_for('main.post',id=post.id) }}" >{{ post.title }}</a></h1>
+                                    <div class="post-meta">
+                                        <span class="author">作者：
+                                            <a href="{{ url_for('main.user',username=post.author.username) }}">
+                                            {{ post.author.username }}</a></span> &brvbar;
+                                        <time class="post-date">{{ moment(post.timestamp).format('LL')}}</time>
+                                    </div>
+                                </div>
+                                <div class="post-content">
+                                    {% if post.body_html %}
+                                        {{ post.body_html | safe }}
+                                    {% else %}
+                                        {{ post.body }}
+                                    {% endif %}
+
+                                </div>
+                                <div class="post-footer pull-right">
+                                    <a href="{{ url_for('main.post',id=post.id) }}" class="readall">
+                                        <span class="btn btn-success">阅读全文</span>
+                                    </a>
+                                    {% if current_user==post.author %}
+                                        <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>
+
+                                    {% elif current_user.is_administrator() %}
+                                        <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                                        编辑[管理员]</a>
+                                    {% endif %}
+                                    {% if post.author==current_user %}
+                                         <a href="{{url_for('main.delete',id=post.id)}}" class="btn btn-success">
+                                      删除博文
+                                        </a>
+                                    {% elif current_user.is_administrator() %}
+                                        <a href="{{url_for('main.deletes',id=post.id)}}" class="btn btn-success">
+                                       删除博文[管理员]
+                                        </a>
+                                    {% endif %}
+                                    <a class='btn btn-success' href="{{ url_for('main.post',id=post.id)}}#comments">
+                                        评论:&nbsp;&nbsp;<span class="badge">{{ post.comments.count()}}</span></a>
+                                </div>
+                            </li>
+                            {% endfor %}
+
+                        </div>
+                        {% if pagination %}
+                            <nav class="pagination" role="navigation">
+                            <span class="page-number btn-lg">{{ macros.
+                            pagination_widget(pagination,'main.index') }}</span></nav>
+                        {% endif %}
+                </main>
+
+                <aside class="col-md-4 sidebar">
+                    <div class="widget">
+	                 <h4 class="title">账户</h4>
+                        <div class="content community">
+                        {% if current_user.is_authenticated %}
+                            <p><a href="{{ url_for('auth.logout') }}">退出账户</a></p>
+                            <p><a href="{{ url_for('auth.change_password') }}">修改密码
+                            </a></p>
+                            <p><a href="{{ url_for('auth.change_email_request') }}">
+                                修改邮箱</a></p>
+                            {% else %}
+                            <p><a href="{{ url_for('auth.login') }}" title="进入我的博客空间">
+                                <i class="glyphicon glyphicon-user">
+
+                            </i>&nbsp;&nbsp;登陆</a></p>
+                            <p><a href="{{ url_for('auth.register') }}" title="我要有自己的
+		                        小世界喽!"><i class="glyphicon glyphicon-hand-right"></i>
+                            &nbsp;注册</a></p>
+                        {% endif %}
+	                    </div>
+                        </div>
+                    <div class="widget">
+	                <h4 class="title">最新文章</h4>
+                        <div class="content community">
+                      {% if postsart  %}
+                            <p><a href="{{ url_for('main.post',id=postsart[0].id) }}
+                            ">{{ postsart[0].title }}</a>
+                            </p>
+                            <p><a href="{{ url_for('main.post',id=postsart[1].id) }}
+                            ">{{postsart[1].title }}</a>
+                            </p>
+                            <p><a href="{{ url_for('main.post',id=postsart[2].id) }}
+                            ">{{ postsart[2].title }}</a>
+                            </p>
+                          <p><a href="{{ url_for('main.post',id=postsart[3].id) }}
+                            ">{{ postsart[3].title }}</a>
+                            </p>
+                          <p><a href="{{ url_for('main.post',id=postsart[4].id) }}
+                            ">{{ postsart[4].title }}</a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="widget">
+	                <h4 class="title">热门文章</h4>
+                        <div class="content community">
+                          {% if postsart %}
+                            <p><a href="{{ url_for('main.post',id=p[0].id) }}
+                            ">{{ p[0].title }}</a>
+                            </p>
+                            <p><a href="{{ url_for('main.post',id=p[1].id) }}
+                            ">{{ p[1].title }}</a>
+                            </p>
+                            <p><a href="{{ url_for('main.post',id=p[2].id) }}
+                            ">{{ p[2].title }}</a>
+                            </p>
+                              <p><a href="{{ url_for('main.post',id=p[3].id) }}
+                            ">{{ p[3].title }}</a>
+                            </p>
+                              <p><a href="{{ url_for('main.post',id=p[4].id) }}
+                            ">{{ p[4].title }}</a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="widget">
+	                <h4 class="title">分享我们的小世界</h4>
+                        <div ><a href="http://service.weibo.com/share/share.php?url=
+                        ''&title=我们的小世界:博客空间&pic=flasky1/app/static/favicon.ico" class="glyphicon glyphicon-share">
+                            新浪微博</a>
+                        </div>
+                         <div><a href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?&title=我们的小世界
+                         &pics=../static/favicon.ico"
+                         class="glyphicon glyphicon-share"> QQ空间</a>
+                        </div>
+                    </div>
+
+                    <div class="widget">
+	                <h4 class="title">友情链接</h4>
+                        <div class="content community">
+                            <p><a href="http://www.henannu.edu.cn/">河南师范大学</a></p>
+                            <p><a href="http://www.henu.edu.cn/">河南大学</a></p>
+                            <p><a href="http://www.zzu.edu.cn/">郑州大学</a></p>
+                        </div>
+                    </div>
+            </aside>
+            </div>
+            </div>
+    </section>
+    <div class="go-top">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+    </div>
+{% endblock %}
+</div>
+ <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <span>Copyright &copy; 2015 - 2016</span> |
+                    <span><a href="#">博客空间</a></span> |
+                    <span><a href="#">关于我们</a></span> |
+                    <span><a href="#">联系我们</a></span>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 {% block scripts %}
-{{super()}}
-{{pagedown.include_pagedown()}}
+
+    {{ moment.include_jquery() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+
+   {{ super() }}
+    {{ pagedown.include_pagedown()}}
+    <script src="../static/js/jquery.js" type="application/javascript"></script>
+    <script src="../static/js/demo.js" type="application/javascript"></script>
+{% endblock %}
+</body>
+{% endblock %}
+
+{% block metas %}
+<meta charset="utf-8"/>
 {% endblock %}

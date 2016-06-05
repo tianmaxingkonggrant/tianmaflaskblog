@@ -1,34 +1,34 @@
-<ul class="posts">
-    {% for post in posts %}
-    <li>
+<div>
+{% for post in posts %}
+    <li class="post">
+        <div class="post-head">
+            <h1 class="post-title" id="mainposts">
+                <a id="postsli" href="{{ url_for('main.post',id=post.id) }}">
+                    {{ post.title }}</a></h1>
+            <div class="post-meta">
+                <span class="author">作者：
+                    <a href="{{ url_for('main.user',username=post.author.username)}}">
+                        {{ post.author.username }}</a>
+                </span> &brvbar;
+                <time class="post-date">{{ moment(post.timestamp).format('LL')}}</time>
+            </div>
+        </div>
         <div class="post-content">
-        <div class="post-author"><a href="{{url_for('main.user',username=
-        post.author.username)}}">{{post.author.username}}</a>
-        <div class="post-date">{{moment(post.timestamp).fromNow()}}</div></div>
-        <div>{{post.title}}</div>
-        <div class="post-body">
-        {% if post.body_html %}
-            {{post.body_html | safe}}
-        {% else %}
-            {{post.body}}
-        {% endif %}
-        </div>
-        </div>
-        <div class="post-footer">
-            <a href="{{url_for('main.post',id=post.id)}}">
-                <span class="label label-default">阅读全文</span>
-            </a>
-            {% if current_user == post.author %}
-            <a href="{{url_for('main.edit',id=post.id)}}">
-                <sapn class="label label-default">编辑</sapn>
-            </a>
+            {% if post.body_html %}
+                {{ post.body_html | safe }}
+            {% else %}
+                {{ post.body }}
             {% endif %}
+        </div>
+        <div class="post-footer pull-right">
+            {% if post.author==current_user %}
+                <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>{% endif %}
             {% if current_user.is_administrator() %}
-            <a href="{{url_for('main.edit',id=post.id)}}">
-                <sapn class="label label-warning">编辑博文[管理员]</sapn>
-            </a>
+                <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                编辑[管理员]</a>
             {% endif %}
-            {% if user == current_user %}
+            {% if user==current_user %}
             <a href="{{url_for('main.delete',id=post.id)}}">
                 <sapn class="label label-danger">删除博文</sapn>
             </a>
@@ -38,10 +38,12 @@
                 <sapn class="label label-danger">删除博文[管理员]</sapn>
             </a>
             {% endif %}
-            <a href="{{url_for('main.post',id=post.id)}}#comments">
-                {{post.comments.count()}}条评论
+            <a class="btn btn-success"
+               href="{{ url_for('main.post',id=post.id)}}#comments">
+                评论:&nbsp;&nbsp;<span class="badge">
+                {{post.comments.count()}}</span>
             </a>
         </div>
     </li>
     {% endfor %}
-</ul>
+</div>
