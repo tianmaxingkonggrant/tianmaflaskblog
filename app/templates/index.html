@@ -139,7 +139,7 @@
                                         &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>
 
                                     {% elif current_user.is_administrator() %}
-                                        <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                                        <a class='btn btn-warning' href="{{ url_for('main.edit',id=post.id)}}">
                                         编辑[管理员]</a>
                                     {% endif %}
                                     {% if post.author==current_user %}
@@ -147,7 +147,7 @@
                                       删除博文
                                         </a>
                                     {% elif current_user.is_administrator() %}
-                                        <a href="{{url_for('main.deletes',id=post.id)}}" class="btn btn-success">
+                                        <a href="{{url_for('main.deletes',id=post.id)}}" class="btn btn-danger">
                                        删除博文[管理员]
                                         </a>
                                     {% endif %}

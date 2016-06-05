@@ -41,10 +41,11 @@ def index():
 def write_post():
 	form = PostForm()
 	if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-		post = Post(title=form.title.data, body=form.body.data, 			author=current_user._get_current_object())
+		post = Post(title=form.title.data, body=form.body.data,author=current_user._get_current_object())
 		db.session.add(post)
 		return redirect(url_for('main.index', posts=[post]))
 	return render_template('write_post.html', form=form)
+
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
@@ -100,7 +101,7 @@ def edit_profile_admin(id):
 		user.about_me = form.about_me.data
 		db.session.add(user)
 		flash('用户资料已更新')
-		return redirect(url_for('main.user',username=user.username))
+		return redirect(url_for('main.user', username=user.username))
 	form.email.data = user.email
 	form.username.data = user.username
 	form.location.data = user.location
@@ -119,7 +120,7 @@ def post(id):
 		comment = Comment(body=form.body.data, post=post, author=
 		current_user._get_current_object())
 		db.session.add(comment)
-		return redirect(url_for('main.post', id=post.id))
+		return redirect(url_for('main.post',id=post.id))
 	page = request.args.get('page', 1, type=int)
 	pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
 		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENTS'])
@@ -149,7 +150,7 @@ def delete(id):
 	post = Post.query.get_or_404(id)
 	if post.author == current_user:
 		db.session.delete(post)
-		return redirect(url_for('main.user', username=current_user.usernmae))
+		return redirect(url_for('main.user', username=current_user.username))
 
 
 @main.route('/deletes/<int:id>')
@@ -204,8 +205,7 @@ def followers(username):
 	follows = [{'user': item.follower, 'timestamp': item.timestamp} for item\
 			   in pagination.items]
 	return render_template('followers.html', user=user, pagination=pagination,
-						   follows=follows, title="Followers of",
-                           endpoint='main.followers')
+						   follows=follows, endpoint='main.followers')
 
 
 @main.route('/followed/<username>')
@@ -221,7 +221,7 @@ def followed(username):
 	follows = [{'user': item.followed, 'timestamp': item.timestamp} for item\
 			   in pagination.items]
 	return render_template('followers.html', user=user, pagination=pagination,
-						   follows=follows, title='Followed by', endpoint='main.followed')
+						   follows=follows, endpoint='main.followed')
 
 
 @main.route('/all')

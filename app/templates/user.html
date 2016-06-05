@@ -1,52 +1,89 @@
 {% extends 'base.html' %}
 {% import '_macros.html' as macros %}
-{% import 'bootstrap/wtf.html' as wtf %}
+
 {% block page_content %}
-<div class="page-header">
-    <h1>{{user.username}}</h1>
-    <p>{% if user.name %}姓名:{{user.name}}{% endif %}</p>
-    <p>{% if user.location %} 地址：<a href="http://api.map.baidu.com/geocoder?
+<div class="container">
+<section class="border">
+    <div class="userinfo">
+        <h1>{{ user.username }}</h1>
+        {% if user.name or user.location%}
+            <p>
+                {% if user.name %}姓名：{{ user.name }}<br>{%endif%}
+                {% if user.location %} 地址： <a href="http://api.map.baidu.com/geocoder?
                 address={{ user.location }}&output=html">
-                    {{ user.location }}</a><br>{% endif %}</p>
-    {% if current_user.is_administrator() %}
-    <p><a href="mailto:{{user.email}}">{{user.email}}</a></p>{% endif %}
-    {% if current_user.about_me %}
-    <P>关于我:{{user.about_me}}</P>{% endif %}
-    <p>注册日期:{{moment(user.member_since).format('L')}}</p>
-    <p>最近访问:{{moment(user.last_seen).fromNow()}}</p>
-    <p>博主{{user.username}}共发表了{{user.posts.count()}}篇博文.</p>
-    {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-        {% if not current_user.is_following(user) %}
-        <a href="{{url_for('main.follow',username=user.username)}}" class="btn btn-primary">关注TA</a>
-        {% else %}
-        <a href="{{url_for('main.unfollow',username=user.username)}}" class="btn btn-success">取消关注</a>{% endif %}
-    {% endif %}
-    <a href="{{url_for('main.followers',username=user.username)}}">
-        关注我: <span class="badge">{{user.followers.count() - 1}}</span>
-    </a>
-    <a href="{{url_for('main.followed',username=user.username)}}">
-        我在关注: <span class="badge">{{user.followed.count() - 1}}</span>
-    </a>
-    {% if current_user.is_authenticated and user != current_user and user.
-    is_following(current_user)%}
-    | <span class="bun btn-success">{{user.username}}正在关注你</span>
-    {% endif %}<br>
-    {% if user == current_user %}
-    <a class="btn btn-success" href="{{url_for('main.edit_profile')}}">编辑资料</a>
-    {% endif %}
-    {% if current_user.is_administrator() %}
-    <a class="btn btn-danger" href="{{url_for('main.edit_profile_admin',id=user.id)}}">编辑资料[管理员]</a>
-    {% endif %}
-    {{wtf.quick_form(form)}}
-    <img src="../static/uploadimages/{{current_user.img}}">
+                    {{ user.location }}</a><br>{% endif %}
+            </p>
+        {% endif %}
+
+        {% if current_user.is_administrator() %}
+            <P>邮箱：<a href="mailto:{{ user.email }}">{{ user.email }}</a></P>
+        {% endif %}
+
+        {% if user.about_me %}<p>简介：{{ user.about_me }}</p>{% endif %}
+
+        <p> 注册日期：{{ moment(user.member_since).format('L') }}.</p>
+        <p>上一次浏览： {{ moment(user.last_seen).fromNow() }}.</p>
+        <p>{{ user.posts.count() }} 博客文章. {{ user.comments.count()}} 评论.</p>
+
+        <p>{% if current_user.can(Permission.FOLLOW) and user !=current_user %}
+            {% if not current_user.is_following(user) %}
+            <a href="{{ url_for('main.follow',username=user.username) }}" class="btn btn
+            -primary">关注</a>
+            {% else %}
+            <a href="{{ url_for('main.unfollow',username=user.username)}}" class="btn
+            btn-default" >不再关注</a>
+            {% endif %}
+        {% endif %}
+
+        <a href="{{ url_for('main.followers',username=user.username)}}">
+            粉丝 : <span class='badge'>{{ user.followers.count()- 1}}</span></a>
+        <a href="{{ url_for('main.followed',username=user.username)}}">关注 :
+        <span class="badge">{{ user.followed.count() - 1}}</span></a>
+
+        {% if current_user.is_authenticated and user != current_user and user.is_following
+                (current_user)%} | <span class="label label-default">Follows you</span>
+        {% endif %}
+        </p>
+        <p>
+        {% if user==current_user %}
+            <a class="btn btn-success"
+               href="{{ url_for('main.edit_profile') }}">&nbsp;&nbsp;编辑资料
+            </a>
+        {% endif %}</p>
+        <p>
+        {% if current_user.is_administrator() %}
+            <a class="btn btn-warning"
+               href="{{ url_for('main.edit_profile_admin',id=user.id) }}">编辑资料 [管理员]</a>
+        {% endif %}
+        </p>
+    </div>
+      {% if user.img %}
+      <div class="userinfo col-md-offset-6" id="showform">
+        <img src="../static/uploadimages/{{ user.img }}" id="showpic" />
+        <form method="post" enctype="multipart/form-data" class="showform">
+            {{ form.hidden_tag() }}
+            {{ form.picture.label}}
+            {{ form.picture }}
+            {{ form.submit }}
+        </form>
+     </div>{% endif %}
+
+</section>
+
+        <h2 class="text-center">{{ user.username }}的博客</h2>
+        {% include '_posts.html' %}
+       {% if pagination %}
+           <nav class="pagination" role="navigation">
+               <span class="page-number btn-lg">{{ macros.pagination_widget(pagination,'main.user',username=user.username) }}</span></nav>
+       {% endif %}
+        </div>
 </div>
-<div>
-    <h3>{{user.username}}发表的博文</h3>
-    {% include '_posts.html' %}
-{% if pagination %}
-<div class="pagination">
-    {{macros.pagination_widget(pagination, 'main.user', username=user.username)}}
-</div>
-{% endif %}
-</div>
+
 {% endblock %}
+
+
+
+
+
+
+

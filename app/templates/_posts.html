@@ -25,17 +25,17 @@
                 <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
                 &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>{% endif %}
             {% if current_user.is_administrator() %}
-                <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
+                <a class='btn btn-warning' href="{{ url_for('main.edit',id=post.id)}}">
                 编辑[管理员]</a>
             {% endif %}
             {% if user==current_user %}
             <a href="{{url_for('main.delete',id=post.id)}}">
-                <sapn class="label label-danger">删除博文</sapn>
+                <sapn class="btn btn-success">删除博文</sapn>
             </a>
-            {% endif %}
-            {% if current_user.is_administrator() %}
+
+            {% elif current_user.is_administrator() %}
             <a href="{{url_for('main.deletes',id=post.id)}}">
-                <sapn class="label label-danger">删除博文[管理员]</sapn>
+                <sapn class="btn btn-danger">删除博文[管理员]</sapn>
             </a>
             {% endif %}
             <a class="btn btn-success"

@@ -260,11 +260,11 @@ class Post(db.Model):
 	comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
 	@staticmethod
-	def on_changed_body(target,value,oldvalue,initiator):
+	def on_changed_body(target,body,oldvalue,initiator):
 		allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
 					   'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3',
-					   'p', 'br', 'u', 'time', 'article', 'h4']
-		target.body_html = bleach.linkify(bleach.clean(markdown(value,\
+					   'p', 'br', 'u', 'time', 'article', 'h4', 'font']
+		target.body_html = bleach.linkify(bleach.clean(markdown(body,\
 				output_format='html'), tags=allowed_tags, strip=True))
 
 	def to_json(self):

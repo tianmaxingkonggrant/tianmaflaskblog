@@ -1,28 +1,30 @@
-<ul class="comments">
+<ul class="post_comments">
     {% for comment in comments %}
         <div class="comment-content">
-            <div class="comment-author"><a href="{{ url_for('main.user', username=comment.author.username) }}">{{ comment.author.username }}</a></div>
-            <div class="comment-date">{{ moment(comment.timestamp).fromNow() }}</div>
+            <div ><a href="{{ url_for('main.user', username=comment.author.username) }}" class="comment_author"><span class="glyphicon glyphicon-user small"></span>&nbsp;{{ comment.author.username }}</a>&nbsp;&nbsp;
+           {{ moment(comment.timestamp).fromNow() }}</div>
             <div class="comment-body">
                 {% if comment.disabled %}
                     <p><i>本条评论已被协管员封闭</i></p>
                 {% endif %}
                 {% if moderate or not comment.disabled %}
                     {% if comment.body_html %}
-                        {{ comment.body_html | safe }}
+                       <p>{{ comment.body_html | safe }}</p>
                     {% else %}
-                        {{ comment.body }}
+                       {{ comment.body }}
                     {% endif %}
                 {% endif %}
             </div>
+            <div class="manage_comments">
             {% if moderate %}
-                <br>
                 {% if comment.disabled %}
-                <a class="btn btn-default btn-xs" href="{{url_for('main.moderate_enable',id=comment.id,page=page)}}">开放评论</a>
+
+                <a class="btn btn-default" href="{{url_for('main.moderate_enable',id=comment.id,page=page)}}">开放评论</a>
                 {% else %}
-                <a class="btn btn-danger btn-xs" href="{{url_for('main.moderate_disabled',id=comment.id,page=page)}}">封闭此条评论</a>
+                <a class="btn btn-danger btn-sm" href="{{url_for('main.moderate_disabled',id=comment.id,page=page)}}">封闭评论</a>
                 {% endif %}
             {% endif %}
+            </div>
         </div>
     </li>
     {% endfor %}

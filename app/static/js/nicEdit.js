@@ -1152,7 +1152,7 @@ var nicEditorFontSizeSelect = nicEditorSelect.extend({
 });
 
 var nicEditorFontFamilySelect = nicEditorSelect.extend({
-	sel : {'arial' : 'Arial','comic sans ms' : 'Comic Sans','宋体' : '宋体','楷体' : '楷体', 'trebuchet ms' : 'Trebuchet', 'verdana' : 'Verdana'},
+	sel : {'arial' : 'Arial','宋体' : '宋体','楷体' : '楷体'},
 	
 	init : function() {
 		this.setDisplay('字体样式');

@@ -903,10 +903,11 @@ div.go-top div.stick {
   width: 70%;
   height:350px;
   margin-left: 220px;
+  margin-bottom: 300px;
 }
 
 #showpic {
-  margin-top: 20px;
+  margin-top: 15px;
   width: 320px;
   height: 320px;
   border-radius: 50%;
@@ -936,4 +937,36 @@ div.go-top div.stick {
 .nicEdit-button {
 	background-color: #fff !important;
 
+}
+/*====================================================
+	post.html
+====================================================*/
+.comment_author{
+  font-size: 18px;
+}
+.post_comments{
+  margin-left: -37px;
+}
+.comment-body{
+  text-indent: 1.5em;
+}
+.manage_comments{
+  padding-bottom: 10px;
+}
+.manage_page{
+  margin-bottom: 20px;
+  margin-left: 45%;
+}
+.comment_manage{
+  margin-left: 130px;
+}
+.comment-form{
+  margin-top: 20px;
+}
+/*====================================================
+	follower.html
+====================================================*/
+.follower_pagination{
+  margin-top: 400px;
+  margin-left: 45%;
 }
