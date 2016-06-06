@@ -2,16 +2,15 @@
 from flask import (render_template, abort, redirect,url_for,
 				   current_app, flash, request, make_response)
 from . import main
-from flask.views import View
 from .forms import PostForm, EditProfileForm, EditProfileAdminForm, CommentForm, ImgForm, SearchForm
 from .. import db
 from ..models import User, Role, Permission, Post, Comment
-from flask.ext.login import login_required, current_user
-from ..decorator import admin_required,permission_required
+from flask.ext.login import current_user
+from ..decorator import admin_required, permission_required
 from werkzeug.security import safe_join
+from ..decorator import login_required
 
-
-@main.route('/',methods=['GET','POST'])
+@main.route('/', methods=['GET', 'POST'])
 def index():
 	show_followed = False
 	if current_user.is_authenticated:
@@ -32,8 +31,8 @@ def index():
 	query = searchform.search.data
 	if searchform.validate_on_submit():
 		return redirect(url_for('main.search_results', query=unicode(query)))
-	return render_template('index.html', postsart=postsart, p=p,
-						   posts=posts, pagination=pagination, show_followed=show_followed, searchform=searchform)
+	return render_template('index.html', posts=posts, postsart=postsart, p=p,
+						    pagination=pagination, show_followed=show_followed, searchform=searchform)
 
 
 @main.route('/write-post', methods=['GET', 'POST'])
@@ -48,7 +47,6 @@ def write_post():
 
 
 @main.route('/user/<username>', methods=['GET', 'POST'])
-@login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	page = request.args.get('page', 1, type=int)
@@ -56,16 +54,18 @@ def user(username):
         page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'],
         error_out=False)
 	posts = pagination.items
-	form = ImgForm()
-	from manage import app
-	if form.validate_on_submit():
-		current_user.img = form.picture.data.filename
-		if current_user.img and user.allowed_img(current_user.img):
-			imgdest = safe_join(app.config['UPLOAD_FOLDER'], current_user.img)
-			form.picture.data.save(imgdest)
-			db.session.add(current_user)
-			return redirect(url_for('main.user', username=username))
-	return render_template('user.html', form=form, user=user, posts=posts, pagination=pagination)
+	if user == current_user:
+		form = ImgForm()
+		from manage import app
+		if form.validate_on_submit():
+			current_user.img = form.picture.data.filename
+			if current_user.img and user.allowed_img(current_user.img):
+				imgdest = safe_join(app.config['UPLOAD_FOLDER'], current_user.img)
+				form.picture.data.save(imgdest)
+				db.session.add(current_user)
+				return redirect(url_for('main.user', username=username))
+		return render_template('user.html', form=form, user=user, posts=posts, pagination=pagination)
+	return render_template('user.html', user=user, posts=posts, pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -120,12 +120,22 @@ def post(id):
 		comment = Comment(body=form.body.data, post=post, author=
 		current_user._get_current_object())
 		db.session.add(comment)
-		return redirect(url_for('main.post',id=post.id))
+		return redirect(url_for('main.post', id=post.id))
 	page = request.args.get('page', 1, type=int)
-	pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+	pagination = post.comments.order_by(Comment.timestamp.desc()).paginate(
 		page, per_page=current_app.config['FLASK_PER_PAGE_COMMENTS'])
 	comments = pagination.items
 	return render_template('post.html', posts=[post], form=form, comments=comments, pagination=pagination)
+
+
+@main.route('/po-all')
+def posts_all():
+	page = request.args.get('page', 1, type=int)
+	pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+		page, per_page=current_app.config['FLASK_POSTS_PER_PAGE'], error_out=False)
+	posts = pagination.items
+	return render_template('posts_all.html', posts=posts, pagination=pagination, endpoint='posts_all')
+
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
@@ -159,7 +169,7 @@ def delete(id):
 def deletes(id):
 	post = Post.query.get_or_404(id)
 	db.session.delete(post)
-	return redirect(url_for('main.index')or request.args.get('next'))
+	return redirect(url_for('main.index') or request.args.get('next'))
 
 
 @main.route('/follow/<username>')

@@ -5,8 +5,8 @@
 {% block page_content %}
     <div class="container">
     {% include '_posts.html' %}
-    <h4 id="comments">评论君</h4>
     {% if current_user.can(Permission.COMMENT) %}
+    <h4 id="comments">评论君</h4>
     {{ wtf.quick_form(form) }}
     {% endif %}
       <div class="comment-form">

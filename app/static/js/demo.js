@@ -30,7 +30,7 @@ return arr;
 }
 }
 function testAuto() {
-    if(window.location.pathname.indexOf("user")>-1 || window.location.pathname.indexOf("post")>-1 ){
+    if(window.location.pathname.indexOf("post")>-1 ){
         return false;
     }else {
         var textName = getByClass(document, 'post-content');
@@ -46,10 +46,16 @@ $(document).ready(testAuto());
 $(function(){
     var $fw = $('#followers');
     var $fd = $('#followed');
-    if(window.location.href.indexOf('follwers')){
-        $fd.hide();
+    if(window.location.href.indexOf('followers') > 0 ){
+        $fw.show(); $fd.hide();
     }else {
-        $fw.hide();
+       $fd.show(); $fw.hide();}
+});
+//屏蔽post.html页面的btn(阅读全文)
+$(function(){
+    var $readall = $('#readall');
+    if (window.location.href.indexOf('post') > -1){
+        $readall.hide()
     }
 });
 //图片展示

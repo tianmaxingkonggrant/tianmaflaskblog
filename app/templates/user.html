@@ -60,12 +60,14 @@
       {% if user.img %}
       <div class="userinfo col-md-offset-6" id="showform">
         <img src="../static/uploadimages/{{ user.img }}" id="showpic" />
+          {% if user == current_user %}
         <form method="post" enctype="multipart/form-data" class="showform">
             {{ form.hidden_tag() }}
             {{ form.picture.label}}
             {{ form.picture }}
             {{ form.submit }}
         </form>
+          {% endif %}
      </div>{% endif %}
 
 </section>

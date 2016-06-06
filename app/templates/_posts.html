@@ -20,29 +20,35 @@
                 {{ post.body }}
             {% endif %}
         </div>
-        <div class="post-footer pull-right">
+        <div class="post-footer pull-right" >
+            <a href="{{ url_for('main.post',id=post.id) }}" class="readall">
+                <span class="btn btn-success" id="readall">阅读全文</span>
+            </a>
             {% if post.author==current_user %}
                 <a class='btn btn-success' href="{{ url_for('main.edit',id=post.id)}}">
-                &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>{% endif %}
-            {% if current_user.is_administrator() %}
+                &nbsp;&nbsp;&nbsp;&nbsp;编辑&nbsp;&nbsp;&nbsp;</a>
+            {% elif current_user.is_administrator() %}
                 <a class='btn btn-warning' href="{{ url_for('main.edit',id=post.id)}}">
                 编辑[管理员]</a>
             {% endif %}
-            {% if user==current_user %}
+            {% if post.author==current_user %}
             <a href="{{url_for('main.delete',id=post.id)}}">
                 <sapn class="btn btn-success">删除博文</sapn>
             </a>
-
             {% elif current_user.is_administrator() %}
             <a href="{{url_for('main.deletes',id=post.id)}}">
                 <sapn class="btn btn-danger">删除博文[管理员]</sapn>
             </a>
             {% endif %}
-            <a class="btn btn-success"
-               href="{{ url_for('main.post',id=post.id)}}#comments">
+            {% if current_user.is_authenticated %}
+            <a class="btn btn-success" href="{{ url_for('main.post',id=post.id)}}#comments">
                 评论:&nbsp;&nbsp;<span class="badge">
-                {{post.comments.count()}}</span>
-            </a>
+                {{post.comments.count()}}</span></a>
+            {% else %}
+            <a href="{{url_for('auth.login')}}" class="btn btn-success">
+                评论:&nbsp;&nbsp;<span class="badge">
+                {{post.comments.count()}}</span></a>
+            {% endif %}
         </div>
     </li>
     {% endfor %}

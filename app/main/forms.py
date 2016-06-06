@@ -48,8 +48,8 @@ class EditProfileAdminForm(Form):
 
 
 class PostForm(Form):
-	title = StringField('', validators=[Length(0, 128)])
-	body = TextAreaField('', validators=[DataRequired(message='填写内容')])
+	title = StringField('', validators=[DataRequired(message='请填写标题'),Length(1,128)])
+	body = TextAreaField('', validators=[DataRequired(message='请填写内容')])
 	submit = SubmitField('发表')
 
 

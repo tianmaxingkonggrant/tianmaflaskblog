@@ -78,7 +78,7 @@ class User(UserMixin, db.Model):
 	about_me = db.Column(db.Text())
 	member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 	last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-	img=db.Column(db.Unicode(64))
+	img = db.Column(db.Unicode(64))
 	posts = db.relationship('Post', backref='author', lazy='dynamic')
 	followed = db.relationship('Follow', foreign_keys=[Follow.follower_id],
 					backref=db.backref('follower', lazy='joined'),
@@ -86,7 +86,7 @@ class User(UserMixin, db.Model):
 	followers = db.relationship('Follow', foreign_keys=[Follow.followed_id],
 							   backref=db.backref('followed', lazy='joined'),
 							   lazy='dynamic', cascade='all, delete-orphan')
-	comments = db.relationship('Comment', backref='author', lazy='dynamic')
+	comments = db.relationship('Comment', backref='author', lazy='dynamic', cascade='all,delete-orphan')
 
 	def __init__(self,**kwargs):
 		super(User, self).__init__(**kwargs)
@@ -257,7 +257,7 @@ class Post(db.Model):
 	body_html = db.Column(db.Text)
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	comments = db.relationship('Comment', backref='post', lazy='dynamic')
+	comments = db.relationship('Comment', backref='post', lazy='dynamic', cascade='all,delete-orphan')
 
 	@staticmethod
 	def on_changed_body(target,body,oldvalue,initiator):
@@ -307,7 +307,7 @@ class Comment(db.Model):
 	timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 	disabled = db.Column(db.Boolean)
 	author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+	post_id = db.Column(db.Integer, db.ForeignKey('posts.id'),nullable=False)
 
 	@staticmethod
 	def on_changed_body(target,value,oldvalue,initiator):

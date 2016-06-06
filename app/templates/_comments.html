@@ -2,7 +2,7 @@
     {% for comment in comments %}
         <div class="comment-content">
             <div ><a href="{{ url_for('main.user', username=comment.author.username) }}" class="comment_author"><span class="glyphicon glyphicon-user small"></span>&nbsp;{{ comment.author.username }}</a>&nbsp;&nbsp;
-           {{ moment(comment.timestamp).fromNow() }}</div>
+           {{ moment(comment.timestamp).fromNow(refresh=True) }}</div>
             <div class="comment-body">
                 {% if comment.disabled %}
                     <p><i>本条评论已被协管员封闭</i></p>
