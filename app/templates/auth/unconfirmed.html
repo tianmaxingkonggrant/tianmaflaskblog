@@ -1,16 +1,11 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block page_content %}
-<div class="page-header">
-    <h1>
-        您好, {{ current_user.username }}!
-    </h1>
-    <h3>您还没有确认账号!</h3>
-    <p>
-        请确认账号,如果您希望重新发送一份确认邮件,请点击下面的链接
-    </p>
-    <p>
-        <a href="{{ url_for('auth.resend_confirmation') }}">点我重新发送确认邮件</a>
-    </p>
-</div>
+    <div class="editborder text-center">
+    <h2>hello,{{ current_user.username }}!</h2>
+    <h2>您还没有确认您的账户.</h2>
+    <p>请登陆您的注册邮箱,确认账户.邮件已经发送到您的邮箱.</p>
+    <p>需要再发送一份确认邮件?<a href="{{url_for('auth.resend_confirmation')}}">点我</a></p></div>
 {% endblock %}
+
+
+

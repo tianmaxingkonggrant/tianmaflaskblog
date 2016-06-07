@@ -28,7 +28,7 @@ def unconfirmed():
 @login_required
 def resend_confirmation():
 	token = current_user.generate_confirmation_token()
-	send_email(current_user.email,'确认您的账号', 'auth/email/confirm', user=current_user, token=token)
+	send_email(current_user.email, '确认您的账号', 'auth/email/confirm', user=current_user, token=token)
 	flash('新的确认邮件已发送至您的邮箱,请确认.')
 	return redirect(url_for('main.index'))
 
@@ -57,7 +57,7 @@ def logout():
 def register():
 	form = RegistrationForm()
 	if form.validate_on_submit():
-		user = User(email=form.email.data,username=form.username.data
+		user = User(email=form.email.data, username=form.username.data
 					,password=form.password.data)
 		db.session.add(user)
 		db.session.commit()

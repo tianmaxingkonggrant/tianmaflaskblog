@@ -21,23 +21,19 @@
    <!-- 轮播（Carousel）项目 -->
    <div class="carousel-inner">
       <div class="item active">
-         <img src="../static/project_images/slide1.jpg" alt="First slide">
+         <img src="../static/project_images/slide1.jpg" alt="图1">
       </div>
       <div class="item">
-         <img src="../static/project_images/slide2.jpg" alt="Second slide">
+         <img src="../static/project_images/slide2.jpg" alt="图2">
       </div>
-      <div class="item">
-         <img src="../static/project_images/slide3.jpg" alt="Third slide">
+       <div class="item">
+         <img src="../static/project_images/slide3.jpg" alt="图3">
       </div>
    </div>
    <!-- 轮播（Carousel）导航 -->
-   <a class="carousel-control left" href="#myCarousel"
-      data-slide="prev" ></a>
-   <a class="carousel-control right" href="#myCarousel"
-      data-slide="next" ></a>
-
+   <a class="carousel-control left" href="#myCarousel" data-slide="prev" ></a>
+   <a class="carousel-control right" href="#myCarousel" data-slide="next" ></a>
 </div>
-
     </header>
     <!-- end header -->
 
@@ -96,7 +92,7 @@
         <div class="container">
             {% if current_user.is_authenticated %}
                 <div class="page-header">
-                    <h1>hello,{{ current_user.username }}!</h1>
+                    <h1>你好,{{ current_user.username }}!</h1>
                     <ul class="nav nav-tabs">
                         <li {% if not show_followed %} class="active"{% endif %}>
                                 <a href="{{ url_for('.show_all') }}">所有博客</a>
@@ -206,12 +202,6 @@
                             <p><a href="{{ url_for('main.post',id=postsart[2].id) }}
                             ">{{ postsart[2].title }}</a>
                             </p>
-                          <p><a href="{{ url_for('main.post',id=postsart[3].id) }}
-                            ">{{ postsart[3].title }}</a>
-                            </p>
-                          <p><a href="{{ url_for('main.post',id=postsart[4].id) }}
-                            ">{{ postsart[4].title }}</a>
-                            </p>
                             {% endif %}
                         </div>
                     </div>
@@ -227,12 +217,6 @@
                             </p>
                             <p><a href="{{ url_for('main.post',id=p[2].id) }}
                             ">{{ p[2].title }}</a>
-                            </p>
-                              <p><a href="{{ url_for('main.post',id=p[3].id) }}
-                            ">{{ p[3].title }}</a>
-                            </p>
-                              <p><a href="{{ url_for('main.post',id=p[4].id) }}
-                            ">{{ p[4].title }}</a>
                             </p>
                             {% endif %}
                         </div>
@@ -283,19 +267,15 @@
     </div>
 {% endblock %}
 {% block scripts %}
-
-    {{ moment.include_jquery() }}
+<script src="../static/js/jquery.js" type="application/javascript"></script>
+<script src="../static/js/demo.js" type="application/javascript"></script>
+</body>
+{{ super() }}
+{{ moment.include_jquery() }}
 {{ moment.include_moment() }}
 {{ moment.lang('zh-CN') }}
-
-   {{ super() }}
-    {{ pagedown.include_pagedown()}}
-    <script src="../static/js/jquery.js" type="application/javascript"></script>
-    <script src="../static/js/demo.js" type="application/javascript"></script>
 {% endblock %}
-</body>
-{% endblock %}
-
 {% block metas %}
 <meta charset="utf-8"/>
+{% endblock %}
 {% endblock %}

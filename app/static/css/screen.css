@@ -888,35 +888,40 @@ div.go-top div.stick {
 
 .userinfo {
   position: absolute;
-  width: 230px;
+  width: 420px;
   height: 330px;
   text-align: left;
-  padding-left: 20px;
-  padding-top: 20px;
+  padding-left: 16px;
+  padding-top: 18px;
   float: right;
-
+  font:bold 16px kaiti;
+  color: #111111;
 }
-/*====================================================
-	user.html
-====================================================*/
+.userinfopic {
+  width: 250px;
+  height: 330px;
+  text-align: left;
+  padding-left: 820px;
+  padding-top: 18px;
+  font:bold 16px kaiti;
+  color: #111111;
+}
 .editborder{
   width: 70%;
   height:350px;
   margin-left: 220px;
   margin-bottom: 300px;
 }
-
 #showpic {
   margin-top: 15px;
-  width: 320px;
-  height: 320px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
-
 }
 .showform{
-  padding-bottom: -130px;
   padding-left: 110px;
   opacity: 0.7;
+  display: inline-block;
 }
 /*====================================================
 	write_post.html

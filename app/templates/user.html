@@ -5,7 +5,7 @@
 <div class="container">
 <section class="border">
     <div class="userinfo">
-        <h1>{{ user.username }}</h1>
+        <h3>{{ user.username }}</h3>
         {% if user.name or user.location%}
             <p>
                 {% if user.name %}姓名：{{ user.name }}<br>{%endif%}
@@ -14,13 +14,10 @@
                     {{ user.location }}</a><br>{% endif %}
             </p>
         {% endif %}
-
         {% if current_user.is_administrator() %}
-            <P>邮箱：<a href="mailto:{{ user.email }}">{{ user.email }}</a></P>
+        <p>邮箱：<a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
         {% endif %}
-
         {% if user.about_me %}<p>简介：{{ user.about_me }}</p>{% endif %}
-
         <p> 注册日期：{{ moment(user.member_since).format('L') }}.</p>
         <p>上一次浏览： {{ moment(user.last_seen).fromNow() }}.</p>
         <p>{{ user.posts.count() }} 博客文章. {{ user.comments.count()}} 评论.</p>
@@ -31,17 +28,16 @@
             -primary">关注</a>
             {% else %}
             <a href="{{ url_for('main.unfollow',username=user.username)}}" class="btn
-            btn-default" >不再关注</a>
+            btn-default btn-sm" >不再关注</a>
             {% endif %}
         {% endif %}
-
+        <br>
         <a href="{{ url_for('main.followers',username=user.username)}}">
             粉丝 : <span class='badge'>{{ user.followers.count()- 1}}</span></a>
         <a href="{{ url_for('main.followed',username=user.username)}}">关注 :
         <span class="badge">{{ user.followed.count() - 1}}</span></a>
-
         {% if current_user.is_authenticated and user != current_user and user.is_following
-                (current_user)%} | <span class="label label-default">Follows you</span>
+                (current_user)%}<span class="label label-default">该用户正在关注你</span>
         {% endif %}
         </p>
         <p>
@@ -57,10 +53,10 @@
         {% endif %}
         </p>
     </div>
-      {% if user.img %}
-      <div class="userinfo col-md-offset-6" id="showform">
+
+      <div class="userinfopic" id="showform">
         <img src="../static/uploadimages/{{ user.img }}" id="showpic" />
-          {% if user == current_user %}
+       {% if user == current_user %}
         <form method="post" enctype="multipart/form-data" class="showform">
             {{ form.hidden_tag() }}
             {{ form.picture.label}}
@@ -68,19 +64,16 @@
             {{ form.submit }}
         </form>
           {% endif %}
-     </div>{% endif %}
+     </div>
 
 </section>
-
-        <h2 class="text-center">{{ user.username }}的博客</h2>
-        {% include '_posts.html' %}
+    <h2 class="text-center">{{ user.username }}的博客</h2>
+    {% include '_posts.html' %}
        {% if pagination %}
            <nav class="pagination" role="navigation">
                <span class="page-number btn-lg">{{ macros.pagination_widget(pagination,'main.user',username=user.username) }}</span></nav>
        {% endif %}
-        </div>
-</div>
-
+    </div>
 {% endblock %}
 
 

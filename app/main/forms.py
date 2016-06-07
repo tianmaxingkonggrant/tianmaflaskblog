@@ -7,27 +7,27 @@ from ..models import Role, User
 from wtforms import ValidationError
 from flask.ext.pagedown.fields import PageDownField
 
-class NameForm(Form):
-	name = StringField('您的用户名:',validators=[DataRequired()])
-	submit = SubmitField('保存')
-
 
 class EditProfileForm(Form):
+	username = StringField('用户名',validators=[DataRequired(message='用户名不能为空'),
+		Length(1,64),
+		Regexp(ur"^([0-9A-Za-z]|[\u4e00-\u9fa5])+([0-9A-Za-z]|[\u4e00-\u9fa5])*$", 0, message='用户名不能是特殊字符，比如@￥%.')])
 	name =StringField('姓名:', validators=[Length(0,64)])
 	location = StringField('住址:', validators=[Length(0, 64)])
-	about_me = TextAreaField('关于我:')
+	about_me = TextAreaField('关于我:', validators=[Length(0, 40, message='简介不得超过35个字.')])
 	submit = SubmitField('保存资料')
 
 
 class EditProfileAdminForm(Form):
 	email = StringField('邮箱', validators=[Email(message='邮箱格式不正确'),DataRequired(message='请填写邮箱'),Length(1,64)])
 	username = StringField('用户名',validators=[DataRequired(message='用户名不能为空'),
-		Length(1,64), Regexp('[a-zA-Z]*([\u4e00-\u9fa5]+)[0-9]*',0,message='用户名只能是中文,字母或数字')])
+		Length(1,64),Regexp(ur"^([0-9A-Za-z]|[\u4e00-\u9fa5])+([0-9A-Za-z]|[\u4e00-\u9fa5])*$", 0, message='用户名不能是特殊字符，比如@￥%.')])
+
 	confirmed = BooleanField('确认')
 	role = SelectField('角色',coerce=int)
 	name =StringField('姓名:', validators=[Length(0,64)])
 	location = StringField('住址:', validators=[Length(0, 64)])
-	about_me = TextAreaField('关于我:')
+	about_me = TextAreaField('关于我:', validators=[Length(0, 40, message='简介不得超过35个字.')])
 	submit = SubmitField('保存资料')
 
 	def __init__(self, user, *args, **kwargs):

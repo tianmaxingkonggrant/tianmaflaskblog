@@ -1,15 +1,28 @@
 {% extends 'base.html' %}
-{% import 'bootstrap/wtf.html'  as wtf %}
 
 {% block page_content %}
-<div class="page-header">
-    <h2>编辑博文</h2>
+<link href="../static/css/screen.css" rel="stylesheet" />
+<div class="container">
+<h2 class="col-sm-offset-1">编辑博文</h2>
+<div class="col-sm-offset-1">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            <form class="post-content" method="post">
+            {{form.hidden_tag()}}
+            {{form.title.label}}<br />
+            {{form.title(class='posttitle btn-large',placeholder='添加标题')}}<br />
+            {{form.body.label}}
+            {{form.body(class='posttext',cols="50",id="area1")}}
+            <div class="publishbtn">{{form.submit(class='col-sm-offset-5 btn btn-success btn-lg')}}</div>
+            </form>
+            {% endif %}
 </div>
-<div>
-    {{wtf.quick_form(form)}}
 </div>
-{% endblock %}
 {% block scripts %}
-{{super()}}
-{{pagedown.include_pagedown()}}
+<script type="text/javascript" src="../static/js/nicEdit.js"></script>
+<script type="text/javascript">
+  bkLib.onDomLoaded(function() {
+        new nicEditor({iconsPath : '../static/project_images/nicEditorIcons.gif',maxWidth : 400,Height:300}).panelInstance('area1');
+  });
+</script>
+{% endblock %}
 {% endblock %}

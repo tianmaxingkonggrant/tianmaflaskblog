@@ -17,7 +17,8 @@ class RegistrationForm(Form):
 	email = StringField('邮箱',validators=[Email(message='邮箱格式不正确'),
 		DataRequired(message='请填写登陆邮箱'),Length(1,64)])
 	username = StringField('用户名',validators=[DataRequired(message='用户名不能为空'),
-		Length(1,64),Regexp('[a-zA-Z]*([\u4e00-\u9fa5]+)[0-9]*',0,message='用户名只能是中文,字母或数字')])
+		Length(1,64),
+		Regexp(ur"^([0-9A-Za-z]|[\u4e00-\u9fa5])+([0-9A-Za-z]|[\u4e00-\u9fa5])*$", 0, message='用户名不能是特殊字符，比如@￥%.')])
 	password = PasswordField('密码',validators=[DataRequired(message='请填写密码'),Length(6,20,message='密码需要6位到20位'),EqualTo('password2',message='密码必须匹配')])
 	password2 = PasswordField('确认密码',validators=[DataRequired(message='请填写密码')])
 	submit = SubmitField('保存')
@@ -42,7 +43,7 @@ class ChangePasswordForm(Form):
 
 
 class PasswordResetRequestForm(Form):
-	email = StringField('注册邮箱', validators=[DataRequired(), Length(1, 64),Email()])
+	email = StringField('请填写注册邮箱', validators=[DataRequired(), Length(1, 64),Email()])
 	submit = SubmitField('重置密码')
 
 
