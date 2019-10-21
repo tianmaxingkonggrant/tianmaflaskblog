@@ -52,7 +52,7 @@ defer==1.0.6
 dirspec==13.10
 dominate==2.2.0
 duplicity==0.7.2
-ecdsa==0.13
+ecdsa==0.13.3
 enum34==1.0.4
 flask-whooshee==0.2.0
 flipflop==1.0
