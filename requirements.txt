@@ -62,7 +62,7 @@ gunicorn==19.6.0
 html5lib==0.9999999
 httpauth==0.3
 httpie==0.9.3
-httplib2==0.9
+httplib2==0.18.0
 idna==2.0
 ipaddress==1.0.14
 itsdangerous==0.24
