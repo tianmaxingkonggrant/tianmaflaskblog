@@ -24,7 +24,7 @@ PAM==0.4.2
 Pillow==2.9.0
 PyJWT==1.0.0
 PyNLPIR==0.4.4
-Pygments==2.0.1
+Pygments==2.7.4
 SQLAlchemy==1.0.12
 Tempita==0.5.2
 Twisted-Core==15.2.1
