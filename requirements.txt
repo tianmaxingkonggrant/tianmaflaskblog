@@ -116,7 +116,7 @@ supervisor==3.3.0
 system-service==0.1.6
 ubuntuone-client-data==14.4
 unity-lens-photos==1.0
-urllib3==1.11
+urllib3==1.26.5
 virtualenv==15.0.1
 visitor==0.1.2
 wheel==0.26.0
