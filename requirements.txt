@@ -78,7 +78,7 @@ mysqlclient==1.3.4
 ndg-httpsclient==0.4.0
 oauthlib==1.0.0
 oneconf==0.3.8
-paramiko==1.15.2
+paramiko==2.10.1
 pbr==1.9.1
 pexpect==3.2
 piston-mini-client==0.7.5
