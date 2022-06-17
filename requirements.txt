@@ -30,7 +30,7 @@ Tempita==0.5.2
 Twisted-Core==15.2.1
 Twisted-Web==15.2.1
 WTForms==2.1
-Werkzeug==0.11.9
+Werkzeug==0.15.3
 Whoosh==2.7.4
 adium-theme-ubuntu==0.3.4
 alembic==0.8.5
